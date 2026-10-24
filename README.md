@@ -68,4 +68,4 @@ app/src/pleos/kotlin/.../PleosNaviGateway.kt   Pleos NaviHelper 연동(pleosNavi
 - 경유지 반영 결과는 `NaviHelperEventListener` 콜백으로 확정되지만 아직 연결하지 않아 "요청 접수"까지만 표시합니다.
 - 장소 데이터(좌표·거리·시설)는 **시연용 가상/근사 값**입니다. 실제 서비스는 공공데이터·운영사 API로 교체해야 합니다.
 - 현재 위치 진행률은 시연용 슬라이더입니다(FusedLocation·Vehicle SDK 연동 후속). 위치는 Android LocationManager로 SOS 요약에만 사용합니다.
-- 음성 입력(SpeechToText), 음성 안내(TextToSpeech)는 미구현. 대처 가이드는 전문가 검토 전 시안입니다.
+- 음성 입력은 Android `SpeechRecognizer`(한국어)로 SOS 화면에 구현했습니다(`ui/VoiceInput.kt`). Pleos SpeechToText SDK로 바꿀 때는 이 파일만 수정하면 됩니다. 에뮬레이터는 마이크 설정과 음성 인식 서비스가 없으면 동작하지 않을 수 있습니다. 음성 안내(TextToSpeech)는 미구현. 대처 가이드는 전문가 검토 전 시안입니다.

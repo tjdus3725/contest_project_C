@@ -66,6 +66,10 @@ class AppState(private val ctx: Context) {
     var location by mutableStateOf<Location?>(null)
     var locationAt by mutableStateOf<Long?>(null)
     var locationGranted by mutableStateOf(false)
+    var micGranted by mutableStateOf(false)
+    /** MainActivity가 채워 주는 마이크 권한 요청 동작 */
+    var requestMic: () -> Unit = {}
+    val voice = VoiceInput(ctx)
     private var locListener: LocationListener? = null
 
     val riders get() = members.filter { it.id in riderIds }
@@ -182,6 +186,7 @@ class AppState(private val ctx: Context) {
         val lm = ctx.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
         locListener?.let { runCatching { lm?.removeUpdates(it) } }
         locListener = null
+        voice.release()
         navi.release()
     }
 

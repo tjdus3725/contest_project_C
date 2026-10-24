@@ -46,7 +46,8 @@ fun MyScreen(s: AppState, requestLocation: () -> Unit) {
             Panel(title = "권한") {
                 Text("위치: " + if (s.locationGranted) "허용됨 (SOS 신고용 요약에 사용)" else "허용 안 됨", style = MaterialTheme.typography.bodyLarge)
                 if (!s.locationGranted) BigButton("위치 권한 요청", requestLocation)
-                Hint("마이크 권한은 음성 입력 기능을 추가할 때 요청합니다.")
+                Text("마이크: " + if (s.micGranted) "허용됨 (SOS 음성 입력에 사용)" else "허용 안 됨", style = MaterialTheme.typography.bodyLarge)
+                if (!s.micGranted) BigButton("마이크 권한 요청", s.requestMic)
             }
         }
         item {

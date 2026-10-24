@@ -17,9 +17,16 @@ class MainActivity : ComponentActivity() {
         refreshLocation()
     }
 
+    private val micPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+        state.micGranted = ok
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         state = AppState(applicationContext)
+        state.micGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
+        state.requestMic = { micPermission.launch(Manifest.permission.RECORD_AUDIO) }
         refreshLocation()
         setContent { App(state, requestLocation = ::askLocation) }
     }

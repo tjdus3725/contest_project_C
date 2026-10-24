@@ -84,9 +84,9 @@ fun SosScreen(s: AppState) {
                     placeholder = { Text("예: 아이가 토했어요 / 차에서 연기가 나요") },
                     singleLine = true,
                 )
-                BigButton("상황 확인", {
+                fun analyze(t: String) {
                     notice = ""
-                    when (val m = Triage.classify(text)) {
+                    when (val m = Triage.classify(t)) {
                         is Triage.Match.Emergency -> flow = Flow(m.scenario, m.immediate, false)
                         is Triage.Match.Place -> {
                             flow = null
@@ -98,9 +98,26 @@ fun SosScreen(s: AppState) {
                             notice = "상황을 정확히 이해하지 못했어요. 아래에서 직접 선택해 주세요."
                         }
                     }
-                }, Modifier.fillMaxWidth(), enabled = text.isNotBlank())
+                }
+                val v = s.voice
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    BigButton(
+                        if (v.listening) "⏹ 듣는 중 (누르면 중지)" else "🎤 말하기",
+                        {
+                            when {
+                                v.listening -> v.stop()
+                                !s.micGranted -> s.requestMic()
+                                else -> v.start { heard -> text = heard; analyze(heard) }
+                            }
+                        },
+                        Modifier.weight(1f), color = if (v.listening) SosRed else MaterialTheme.colorScheme.primary,
+                    )
+                    BigButton("상황 확인", { analyze(text) }, Modifier.weight(1f), enabled = text.isNotBlank(), outlined = true)
+                }
+                if (v.message.isNotBlank()) Text(v.message, style = MaterialTheme.typography.bodyLarge, color = WarnAmber)
+                if (!s.micGranted) Hint("🎤를 누르면 마이크 권한을 요청해요.")
                 if (notice.isNotBlank()) Text(notice, style = MaterialTheme.typography.bodyLarge)
-                Hint("음성 입력은 SpeechToText SDK 연동 후 제공 예정입니다. 지금은 문장 입력 또는 아래 버튼을 사용하세요.")
+                Hint("말한 내용은 인식 후 바로 상황 분류에 사용되며 저장하지 않아요. 기기의 음성 인식 서비스가 통신을 쓸 수 있어요.")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Triage.scenarios.take(3).forEach { sc ->
                         BigButton("${sc.icon} ${sc.title}", { flow = Flow(sc, sc.alwaysImmediate, false) },
